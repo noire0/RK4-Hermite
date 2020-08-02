@@ -1,5 +1,5 @@
-      include 'library.f'
-      module m3
+      include 'library.fortran'
+      module auxiliar
         use functions
         implicit none
         type parameters
@@ -8,9 +8,10 @@
         real, parameter :: pi = 3.1415926535
         contains
 
-!cambio de limite infinito -> 1, -infinito -> -1
-!exp(-x**2)*H_n(x)*H_m(x) dx := f(x) dx ->
-!f(t/(1-t²))*(1+t²)/(1-t²)² dt
+! change of variables inf -> 1, -inf -> -1
+! exp(-x**2)*H_n(x)*H_m(x) dx := f(x) dx ->
+! f(t/(1-t²))*(1+t²)/(1-t²)² dt
+
         function integrating4(n,m,x)
           type(parameters), intent(in) :: n,m
           real :: x, integrating4
@@ -20,8 +21,9 @@
      &    *exp(-(x/(1-x**2))**2)
         end function
 
-!se integra numericamente de -infinito a infinito
-!expresión (4)
+
+! trapezoidal rule
+
         subroutine integralHermite4(n,m)
           type(parameters), intent(in) ::  n,m
           integer :: i, ITERATIONS = 1000
@@ -29,26 +31,22 @@
           total = 0
           STEP = 0.95/ITERATIONS
           do i=1,ITERATIONS
-          !formula de trapezoide
-          !(0+i*STEP) variable integrante de 0 a 1
-          !un area por x positivo
             total = total+
      &      (integrating4(n,m,i*STEP)
      &      +integrating4(n,m,(i-1)*STEP))
      &      *STEP/2
-            !print *, 'total:', total
-            !un area por x negativo
+            ! print *, 'total:', total
             total = total+
      &      (integrating4(n,m,-i*STEP)
      &      +integrating4(n,m,-(i-1)*STEP))
      &      *STEP/2
-            !print *, 'total:', total
+            ! print *, 'total:', total
           end do
-          !se hace 'zixzaggeando' por el objetivo de no hacer overflow
+          print*, "Orthogonality (polynomial):"
           print*, 'total (4), n =',floor(n%n),'m =',floor(m%n),':',total
         end subroutine integralHermite4
 
-!expresión (5)
+! expresión (5)
         function integrating5(n,x)
           type(parameters), intent(in) :: n
           real :: x, integrating5
@@ -73,14 +71,15 @@
           total = total+(integrating5(n,-ITERATIONS*STEP)
      &    +integrating5(n,ITERATIONS*STEP))*STEP/2
           total = total/((2.**(n%n))*sqrt(pi)*gamma((n%n)+1))
+          print*, "Norm (polynomial):"
           print*, 'total (5), n =', floor(n%n),':', total
         end subroutine
 
-      end module m3
+      end module auxiliar
  
       program main
-        use m3
-        type(parameters) :: n, m !definido en m3
+        use auxiliar
+        type(parameters) :: n, m ! defined in auxiliar
 
         m%n = 4
         m%x0 = 0
