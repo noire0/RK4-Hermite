@@ -1,4 +1,4 @@
-      include 'library.f'
+      include 'library.fortran'
       module auxiliar
         use hermite
         implicit none
@@ -22,6 +22,8 @@
       program main
         use auxiliar
         real :: x0=0, H0, DH0
+
+!Initial values of Hermite equation from WolframAlpha
 
         call writeArray('3.6',x0,6.45735,-13.4829)
         call writeArray('6.7',x0,-132.771,-4.999)

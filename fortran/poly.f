@@ -1,4 +1,4 @@
-      include 'library.f'
+      include 'library.fortran'
       module auxiliar
         use hermite
         implicit none
@@ -24,7 +24,7 @@
           character(len=:), allocatable :: filename
           type(graph), target :: R, P
           integer :: i
-          filename = 'Cociente Hermite_'//n//' RK4-Polynomial.txt'
+          filename = 'Ratio Hermite_'//n//' RK4-Polynomial.txt'
           P = hermitePolyGraph(stringReal(n))
           R = hermiteRK4Graph(stringReal(n),x0,H0,DH0)
           open(1,file=filename)
@@ -38,6 +38,8 @@
  
       program main
         use auxiliar
+
+!Initial values of Hermite from WolframAlpha
 
         call writeArray('2.7')
         call writeArray('5.6')
