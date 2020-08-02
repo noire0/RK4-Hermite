@@ -12,3 +12,5 @@ Just run compile.sh, works for my default shell (zsh) or just the default sh fed
 Running run.sh does as expected, but it's not as simple without an explanation. It creates files in fortran/rk4 and fortran/poly, which have X and Y coordinates to graph on python. 
 ## Graphs
 By default my python scripts will look exactly there, so if you wat to use the python scripts for something else you have to change the directories, it's actually easy since they only appear once in the python scripts.
+## Warnings
+Fortran compilers that don't include f2008 standards don't have the gamma function, you will have to write it by yourself and include it in the code.
