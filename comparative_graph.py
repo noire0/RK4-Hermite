@@ -27,7 +27,8 @@ def compare(A,B):
                 plt.plot(A[i][0],A[i][1],label=i[:-4])
                 plt.plot(B[j][0],B[j][1],label=j[:-4])
                 plt.legend(loc='upper left')
-                plt.savefig(i[:11]+' Comparison.png') #Hermite_5.6 son 11 chars
+                #Hermite_X.X is 11 chars long
+                plt.savefig(i[:11]+' Comparison.png') 
                 plt.clf()
 
 A = addPlot('fortran/poly')
