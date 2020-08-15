@@ -1,8 +1,10 @@
 ! LIBRARY OF FUNCTIONS
 
       module functions
-        ! constantes
-        ! cubren el intervalo [0,2.5] iterando
+! Constants
+! do i=0,ITERATIONS
+!   i*STEP
+! goes from 0 to 2.5
         integer, parameter :: ITERATIONS = 2500
         real, parameter :: STEP = 2.5/real(ITERATIONS)
 
