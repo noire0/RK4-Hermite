@@ -9,6 +9,7 @@ Fortran compilers that don't include f2008 standards don't have the gamma functi
 ## Compile and run
 First run compile.sh.
 Then you can either create graphs with createGraphs.sh, or see the results of integrating the Hermite equation norm and orthogonality properties (https://en.wikipedia.org/wiki/Hermite_polynomials).
+And of course, check the code in anything here for reference in your own projects.
 ## Still needs some work
 The python scripts use default colors, nothing fancy, but you can see the name of the filenames (of the graphs) used in fortran. 
 Some of the functionality you are reading here is still in work though, but I think it won't change much from here.
