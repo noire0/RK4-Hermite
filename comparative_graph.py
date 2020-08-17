@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import fnmatch
 import os
+import sys
 
 def openfile(filename):
     A = [[],[]]
@@ -27,10 +28,8 @@ def compare(A,B):
                 plt.plot(A[i][0],A[i][1],label=i[:-4])
                 plt.plot(B[j][0],B[j][1],label=j[:-4])
                 plt.legend(loc='upper left')
-                #Hermite_X.X is 11 chars long
-                plt.savefig(i[:11]+' Comparison.png') 
+                plt.savefig(i[:11]+' Comparison.png') #Hermite_5.6 son 11 chars
                 plt.clf()
 
-A = addPlot('fortran/poly')
-B = addPlot('fortran/rk4')
-compare(A,B)
+arguments = sys.argv
+compare(addPlot(arguments[1]),addPlot(arguments[2]))
