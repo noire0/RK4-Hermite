@@ -1,4 +1,4 @@
-      include 'library.fortran'
+      include 'graphLibrary.fortran'
       module auxiliar
         use hermite
         implicit none

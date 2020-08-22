@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import fnmatch
 import os
+import sys
 
 def openfile(filename):
     A = [[],[]]
@@ -27,8 +28,6 @@ def individual(A):
         plt.savefig(i[:-4]+'.png')
         plt.clf()
 
-A = addPlot('fortran/poly')
-B = addPlot('fortran/rk4')
-individual(A)
-individual(B)
-
+arguments = sys.argv
+for i in range(1,len(arguments)):
+    individual(addPlot(arguments[i]))

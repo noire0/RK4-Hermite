@@ -1,0 +1,53 @@
+      include '../library.fortran'
+      module hermite
+        use rungeKutta
+        implicit none
+
+! Usage example declaring type(graph) :: graphType
+! graphType%x(2) = 3
+! print *, graphType%x(2)
+
+        type graph
+          real, dimension(ITERATIONS) :: x, y
+        end type
+
+        contains
+
+        function hermiteRK4Graph(n,x0,H0,DH0) result(H)
+          real, intent(in) :: n, x0, H0, DH0
+          type(graph) :: H
+          real :: v(2)
+          integer :: i
+          H%x(1) = x0
+          H%y(1) = H0
+          v(1) = H0
+          v(2) = DH0
+          do i=1,ITERATIONS-1
+            H%x(i+1) = H%x(i)+STEP
+            v = RK4(n,H%x(i),v,STEP)
+            H%y(i+1) = v(1)
+          end do
+        end function hermiteRK4Graph
+
+        function hermitePolyGraph(n) result(H)
+          real, intent(in) :: n
+          type(graph) :: H
+          ! arreglo a graficar H%x(:),H%y(:)
+          integer :: i
+          H%x(1) = 0
+          H%y(1) = hermitePoly(n,H%x(1))
+          do i=2,ITERATIONS
+            H%x(i) = H%x(i-1)+STEP
+            H%y(i) = hermitePoly(n,H%x(i))
+          end do
+        end function hermitePolyGraph
+
+! stringReal('3.2') = real(3.2)
+        function stringReal(x)
+          character(len=*) :: x
+          real :: stringReal
+          read(x,*) stringReal
+        end function
+
+      end module hermite
+
