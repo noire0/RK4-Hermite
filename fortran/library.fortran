@@ -39,10 +39,10 @@
           do s=0,floor(n/2)
             hermitePoly =
      &      hermitePoly+
-     &      ((((-1)**s)*factorial(n+1))/
-     &      (factorial(real(n-2*s)+1)*factorial(real(s)+1)))
-     &      *((2*x)**(real(n-2*s)))
-          end do 
+     &      ((((-1)**s)*factorial(n))/
+     &      (factorial(real(n-2*s))*factorial(real(s))))*
+     &      ((2*x)**(real(n-2*s)))
+          end do
 
         end function hermitePoly
       end module functions
