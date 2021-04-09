@@ -1,18 +1,20 @@
-CFLAGS =
+CFLAGS = -ffree-form
 LIBS =
 
 BASEDIR = $(shell pwd)
 
 # Files after compilation
-ACFILES = bin tables graphs
+ACFILES = bin tables graphs $(shell echo `find -regex ".+.mod"`)
 
 # Fortran .f files with and without extension
-FFILES = $(wildcard fortran/integrals/*.f)
+FFILES = $(wildcard fortran/integrals/*.f90)
 FFILENAMES = $(notdir $(basename $(FFILES)))
-TFFILES = $(wildcard fortran/tables/*.f)
+TFFILES = $(wildcard fortran/tables/*.f90)
 TFFILENAMES = $(notdir $(basename $(TFFILES)))
 
 .PHONY: clean integrals tables test run graphs
+	
+all: graphs integrals
 	
 graphs: tables
 	./py/graphs.py tables/poly tables/rk4
@@ -32,8 +34,7 @@ clean:
 define FPROGRAM_T =
 $(basename $(notdir $(1))):
 	mkdir -p bin
-	gfortran -o bin/$(basename $(notdir $(1))) $(1)
-	rm -f *.mod
+	gfortran -o bin/$(basename $(notdir $(1))) $(1) $(CFLAGS) -J$(dir $(1))
 endef
 
 $(foreach program,$(FFILES),\

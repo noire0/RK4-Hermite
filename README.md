@@ -18,7 +18,8 @@ program. So I will not add many features in the future, if any.
 Fortran compilers that don't include f2008 standards don't have the gamma
 function, you will have to write it by yourself and include it in the code.
 ## Compile and run
-Default make target will create graphs of the solutions into the graphs/.
+Default make target will create graphs of the solutions into the graphs
+directory, and calculate the integrals.
 The integrals target will show the results of integrating the Hermite
 equation's, the norm and orthogonality tests
 (https://en.wikipedia.org/wiki/Hermite_polynomials).
