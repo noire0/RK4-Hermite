@@ -16,11 +16,11 @@
 ! could be multiple multivariable of first order, or a higher order single
 ! variable
 ! If you change Dv, make sure to also modify the code in the RK4 code
-        function Dv(n,x,v) 
+        function Dv(n, x, v) 
           real, intent(in) :: n, x, v(2)
           real :: Dv(2)
           Dv(1) = v(2)
-          Dv(2) = 2*x*v(2)-2*n*v(1)
+          Dv(2) = 2*x*v(2) - 2*n*v(1)
         end function Dv
 
         function factorial(x)
@@ -30,7 +30,7 @@
         end function factorial
 
 ! hermite polynomial
-        function hermitePoly(n,x)
+        function hermitePoly(n, x)
           real, intent(in) :: n, x
           real :: hermitePoly
           integer :: s
@@ -58,16 +58,17 @@
 !
 ! remove n if Dv doesn't use n
 
-        function RK4(n,x,v,stepSize)
+        function RK4(n, x, v, stepSize)
           real, intent(in) :: n, x, v(2), stepSize
-          real :: k(4,2), RK4(2)
+          real :: k(4, 2), RK4(2)
 
-          k(1,:) = Dv(n,x,v)
-          k(2,:) = Dv(n,x+stepSize/2,v+k(1,:)*stepSize/2)
-          k(3,:) = Dv(n,x+stepSize/2,v+k(2,:)*stepSize/2)
-          k(4,:) = Dv(n,x+stepSize,v+k(3,:)*stepSize)
+          k(1, :) = Dv(n, x, v)
+          k(2, :) = Dv(n, x + stepSize/2, v + k(1, :)*stepSize/2)
+          k(3, :) = Dv(n, x + stepSize/2, v + k(2, :)*stepSize/2)
+          k(4, :) = Dv(n, x + stepSize, v + k(3, :)*stepSize)
 
-          RK4 = v+stepSize*(k(1,:)+2*k(2,:)+2*k(3,:)+k(4,:))/6
+          RK4 = v + stepSize*(k(1, :) + 2*k(2, :) + 2*k(3, :) +
+     &                        k(4, :))/6
 
         end function RK4
       end module rungeKutta
@@ -78,7 +79,7 @@
 
         contains
         
-        function iterativeRK4(n,vector,x_old,x) result(v)
+        function iterativeRK4(n, vector, x_old, x) result(v)
           real, intent(in) :: n, x, x_old, vector(2)
           real :: t, newstep
           real :: v(2)
@@ -91,18 +92,18 @@
             ! precision
             newstep = (x-t)/abs(x-t)*0.001
             do
-              if (abs(t+newstep) >= abs(x)) then
+              if (abs(t + newstep) >= abs(x)) then
                 newstep = x-t
                 exit
               end if
-              v = RK4(n,t,v,newstep)
+              v = RK4(n, t, v, newstep)
               t = t+newstep
             end do
           else
             newstep = x-t
           end if
 
-          v = RK4(n,t,v,newstep)
+          v = RK4(n, t, v, newstep)
           t = t + newstep
         end function iterativeRK4
 

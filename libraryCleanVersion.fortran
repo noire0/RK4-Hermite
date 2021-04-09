@@ -16,32 +16,32 @@
 ! Dv = [Dy, DDy], example equation:
 ! DDy - 2*x*Dy + 2*y = 0
 ! then Dv(1) and Dv(2):
-        function Dv(x,v) 
+        function Dv(x, v) 
           real, intent(in) :: x, v(2)
           real :: Dv(2)
           Dv(1) = v(2)
-          Dv(2) = 2*x*v(2)-2*v(1)
+          Dv(2) = 2*x*v(2) - 2*v(1)
         end function Dv
 
         function factorial(x)
           real, intent(in) :: x
           real :: factorial
-          factorial = gamma(x+1)
+          factorial = gamma(x + 1)
         end function factorial
 
 ! hermite polynomial
-        function hermitePoly(n,x)
+        function hermitePoly(n, x)
           real, intent(in) :: n, x
           real :: hermitePoly
           integer :: s
 
           hermitePoly = 0
-          do s=0,floor(n/2)
+          do s = 0, floor(n/2)
             hermitePoly =
      &      hermitePoly+
-     &      ((((-1)**s)*factorial(n+1))/
-     &      (factorial(real(n-2*s)+1)*factorial(real(s)+1)))
-     &      *((2*x)**(real(n-2*s)))
+     &      ((((-1)**s)*factorial(n + 1))/
+     &      (factorial(real(n - 2*s) + 1)*factorial(real(s) + 1)))
+     &      *((2*x)**(real(n - 2*s)))
           end do 
 
         end function hermitePoly
@@ -59,14 +59,14 @@
 
         function RK4(x,v,stepSize)
           real, intent(in) :: x, v(2), stepSize
-          real :: k(4,2), RK4(2)
+          real :: k(4, 2),  RK4(2)
 
-          k(1,:) = Dv(x,v)
-          k(2,:) = Dv(x+stepSize/2,v+k(1,:)*stepSize/2)
-          k(3,:) = Dv(x+stepSize/2,v+k(2,:)*stepSize/2)
-          k(4,:) = Dv(x+stepSize,v+k(3,:)*stepSize)
+          k(1, :) = Dv(x             , v                     )
+          k(2, :) = Dv(x + stepSize/2, v + k(1, :)*stepSize/2)
+          k(3, :) = Dv(x + stepSize/2, v + k(2, :)*stepSize/2)
+          k(4, :) = Dv(x + stepSize  , v + k(3, :)*stepSize  )
 
-          RK4 = v+stepSize*(k(1,:)+2*k(2,:)+2*k(3,:)+k(4,:))/6
+          RK4 = v + stepSize*(k(1, :) + 2*k(2, :) + 2*k(3, :) + k(4, :))/6
 
         end function RK4
       end module rungeKutta
@@ -77,7 +77,7 @@
 
         contains
         
-        function iterativeRK4(vector,x_old,x) result(v)
+        function iterativeRK4(vector, x_old, x) result(v)
           real, intent(in) :: x, x_old, vector(2)
           real :: t, newstep
           real :: v(2)
@@ -85,23 +85,23 @@
           v = vector
           t = x_old
 
-          if (abs(x-t) > 0.001) then
+          if (abs(x - t) > 0.001) then
             ! keep direction but change size of step to 0.001 for
             ! precision
-            newstep = (x-t)/abs(x-t)*0.001
+            newstep = (x - t)/abs(x - t)*0.001
             do
-              if (abs(t+newstep) >= abs(x)) then
-                newstep = x-t
+              if (abs(t + newstep) >= abs(x)) then
+                newstep = x - t
                 exit
               end if
-              v = RK4(t,v,newstep)
-              t = t+newstep
+              v = RK4(t, v, newstep)
+              t = t + newstep
             end do
           else
-            newstep = x-t
+            newstep = x - t
           end if
 
-          v = RK4(t,v,newstep)
+          v = RK4(t, v, newstep)
           t = t + newstep
         end function iterativeRK4
 

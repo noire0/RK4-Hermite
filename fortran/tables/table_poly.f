@@ -1,4 +1,4 @@
-      include 'graphLibrary.fortran'
+      include 'table_library.fortran'
       module auxiliar
         use hermite
         implicit none
@@ -7,10 +7,10 @@
         subroutine writeArray(n)
           character(len=*), intent(in) :: n
           character(len=:), allocatable :: filename
-          type(graph), target :: H
+          type(table), target :: H
           integer :: i
-          filename = 'Hermite_'//n//' Polynomial.txt' 
-          H = hermitePolyGraph(stringReal(n))
+          filename = 'hermite_'//n//'_polynomial.txt' 
+          H = hermitePolyTable(stringReal(n))
           open(1,file=filename)
           do i=1,ITERATIONS
             write(1,*) H%x(i), H%y(i)
@@ -18,18 +18,18 @@
           close(1)
         end subroutine writeArray
 
-        subroutine comparison(n,x0,H0,DH0)
-          real, intent(in) ::  x0,H0,DH0
-          character(len=*), intent(in) :: n
+        subroutine comparison(n, x0, H0, DH0)
+          real,  intent(in) ::  x0, H0, DH0
+          character(len=*),  intent(in) :: n
           character(len=:), allocatable :: filename
-          type(graph), target :: R, P
+          type(table), target :: R, P
           integer :: i
-          filename = 'Ratio Hermite_'//n//' RK4-Polynomial.txt'
-          P = hermitePolyGraph(stringReal(n))
-          R = hermiteRK4Graph(stringReal(n),x0,H0,DH0)
-          open(1,file=filename)
-          do i=1,ITERATIONS
-            write(1,*) P%x(i), R%y(i)/P%y(i)
+          filename = 'ratio_hermite_'//n//'_rk4_polynomial.txt'
+          P = hermitePolyTable(stringReal(n))
+          R = hermiteRK4Table(stringReal(n), x0, H0, DH0)
+          open(1, file=filename)
+          do i=1, ITERATIONS
+            write(1, *) P%x(i), R%y(i)/P%y(i)
           end do
           close(1)
         end subroutine comparison
