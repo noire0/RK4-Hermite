@@ -1,15 +1,6 @@
-! LIBRARY OF FUNCTIONS
-
-      module functions
-        ! constants
-        ! do i = 0, ITERATIONS
-        !   i*STEP
-        ! goes from 0 to 2.5
-        integer, parameter :: ITERATIONS = 2500
-        real, parameter :: STEP = 2.5/real(ITERATIONS)
-
+      module rungeKutta
+        implicit none
         contains
-
 ! MODIFY DV
 ! Dv is the system of equations
 ! You can modify this part to match a desired equations
@@ -22,42 +13,13 @@
           Dv(1) = v(2)
           Dv(2) = 2*x*v(2) - 2*n*v(1)
         end function Dv
-
-        function factorial(x)
-          real, intent(in) :: x
-          real :: factorial
-          factorial = gamma(x+1)
-        end function factorial
-
-! hermite polynomial
-        function hermitePoly(n, x)
-          real, intent(in) :: n, x
-          real :: hermitePoly
-          integer :: s
-
-          hermitePoly = 0
-          do s=0,floor(n/2)
-            hermitePoly =
-     &      hermitePoly+
-     &      ((((-1)**s)*factorial(n))/
-     &      (factorial(real(n-2*s))*factorial(real(s))))*
-     &      ((2*x)**(real(n-2*s)))
-          end do
-
-        end function hermitePoly
-      end module functions
-
-      module rungeKutta
-        use functions
-        contains
-
-! function Dv has to match function in module functions
 ! in my case Dv takes 3 variables, n, x and a vector v(2)
-! usage example
-! v_i+1 = RK4(n,x_i,v_i,stepSize)
-!
+! vector v contains the known values f(x, n) and f'(x, n)
+! calculates f(x+stepSize), but notice that stepSize has
+! to be small.
+! Usage example:
+! v_i+1 = RK4(n, x_i, v_i, stepSize)
 ! remove n if Dv doesn't use n
-
         function RK4(n, x, v, stepSize)
           real, intent(in) :: n, x, v(2), stepSize
           real :: k(4, 2), RK4(2)
@@ -69,16 +31,14 @@
 
           RK4 = v + stepSize*(k(1, :) + 2*k(2, :) + 2*k(3, :) +
      &                        k(4, :))/6
-
         end function RK4
-      end module rungeKutta
-
-      module moduleIterativeRK4
-        use rungeKutta
-        implicit none
-
-        contains
-        
+        ! calculates f(x, n) given f(x_old, n) and f'(x_old, n)
+        ! vector is [f(x_old, n), f'(x_old, n)]
+        ! here unlike RK4, it doesn't matter if x is far from x_old
+        ! as it goes through small steps.
+        ! The efficacy or efficiency of using a step size of 0.001
+        ! is not proven. For that a real adaptive step size
+        ! must be implemented which I may do in the future
         function iterativeRK4(n, vector, x_old, x) result(v)
           real, intent(in) :: n, x, x_old, vector(2)
           real :: t, newstep
@@ -106,5 +66,4 @@
           v = RK4(n, t, v, newstep)
           t = t + newstep
         end function iterativeRK4
-
-      end module moduleIterativeRK4
+      end module rungeKutta

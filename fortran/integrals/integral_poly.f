@@ -1,4 +1,4 @@
-      include '../library.fortran'
+!      include '../lib/lib.f'
       module auxiliar
         use functions
         implicit none
@@ -7,12 +7,10 @@
         end type
         real, parameter :: pi = 3.1415926535
         contains
-
-! change of variables inf -> 1, -inf -> -1
-! exp(-x**2)*H_n(x)*H_m(x) dx := f(x) dx ->
-! f(t/(1-t²))*(1+t²)/(1-t²)² dt
-
-        function integrating4(n,m,x)
+        ! change of variables inf -> 1, -inf -> -1
+        ! exp(-x**2)*H_n(x)*H_m(x) dx := f(x) dx ->
+        ! f(t/(1-t²))*(1+t²)/(1-t²)² dt
+        function integrating4(n, m, x)
           type(parameters), intent(in) :: n,m
           real :: x, integrating4
           integrating4 = hermitePoly(n%n, x/(1-x**2))
