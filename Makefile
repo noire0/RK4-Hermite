@@ -1,7 +1,8 @@
+SHELL = /bin/bash
 BASEDIR = $(shell pwd)
 SRCDIR = $(BASEDIR)/fortran
 SRCEXT = .f
-CFLAGS = -fPIC -std=f2018
+CFLAGS = -fPIC -std=f2018 -static-libgfortran
 CC = /usr/bin/gfortran
 
 LIBDIR = $(SRCDIR)/lib
@@ -12,6 +13,7 @@ LIBSRCS3 = $(foreach libsrc, tables_ratio_mod, $(LIBDIR)/$(libsrc)$(SRCEXT))
 OBJS1 = $(foreach libsrc, $(LIBSRCS1), $(notdir $(basename $(libsrc)).o))
 OBJS2 = $(foreach libsrc, $(LIBSRCS2), $(notdir $(basename $(libsrc)).o)) $(OBJS1)
 OBJS = $(foreach libsrc, $(LIBSRCS3), $(notdir $(basename $(libsrc)).o)) $(OBJS2)
+
 
 # Integrals Fortran files
 INT_SRCDIR = $(SRCDIR)/integrals
@@ -27,7 +29,7 @@ TAB_BINS = $(notdir $(basename $(TAB_SRCS)))
 ACFILES = bin tables graphs build/*
 
 .PHONY: clean integrals tables test run graphs
-	
+
 graphs: tables
 	./py/graphs.py tables/poly tables/rk4
 
@@ -45,29 +47,38 @@ clean:
 	
 # OBJECT TARGETS
 define OBJECT_TARGET =
+OBJ := $(notdir $(basename $(1))).o
 .ONESHELL:
-SHELL = /bin/bash
-OBJ = $(notdir $(basename $(1))).o
 $$(OBJ): $(2)
 	@mkdir -p build && cd build &&
-	@$(CC) -o $$(OBJ) -c $(1) $(CFLAGS)
-	@echo $$(OBJ) done
+	@$$(CC) -o $$@ -c $(1) $$(CFLAGS)
+	@echo $$@ done
 endef
 $(foreach objectsrc,$(LIBSRCS1),$(eval $(call OBJECT_TARGET,$(objectsrc))))
 $(foreach objectsrc,$(LIBSRCS2),$(eval $(call OBJECT_TARGET,$(objectsrc),$(OBJS1))))
 $(foreach objectsrc,$(LIBSRCS3),$(eval $(call OBJECT_TARGET,$(objectsrc),$(OBJS2))))
 
+# LIBRARY TARGETS
+define LIBRARY_TARGET =
+.ONESHELL:
+$(1): $(2)
+	@cd build &&
+	ar rcs $(1) $(2)
+endef
+$(eval $(call LIBRARY_TARGET,lib1.a,$(OBJS1)))
+$(eval $(call LIBRARY_TARGET,lib2.a,$(OBJS2)))
+$(eval $(call LIBRARY_TARGET,lib.a,$(OBJS)))
+
 # PROGRAM TARGETS
 define PROGRAM_TARGET =
 .ONESHELL:
-SHELL = /bin/bash
 PROGRAM = $(notdir $(basename $(1)))
 $$(PROGRAM): $(2)
 	@echo Building $$(PROGRAM)
 	@mkdir -p bin && cd build &&
-	@$(CC) -c -o $$(PROGRAM).o $(1) $(CFLAGS) &&
+	@$$(CC) -c -o $$(PROGRAM).o $(1) $$(CFLAGS) &&
 	@echo $$(PROGRAM).o done
-	@$(CC) -o $(BASEDIR)/bin/$$(PROGRAM) $$(PROGRAM).o &&
+	@$$(CC) -o $$(BASEDIR)/bin/$$(PROGRAM) $$(PROGRAM).o &&
 	@echo $$(PROGRAM) done
 endef
 $(foreach program,$(INT_SRCS),$(eval $(call PROGRAM_TARGET,$(program),$(OBJS1))))

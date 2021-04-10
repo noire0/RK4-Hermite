@@ -10,4 +10,3 @@
         call writeTable('5.6', x0, -59.4076, 151.008)
         call writeTable('9.8', x0, -21332.9, 31478.4)
       end program main
-
