@@ -1,9 +1,8 @@
-      include "tables.f"
-      include "polynomial.f"
-      module polyTables
+      module tables_poly
         use polynomial
         use tables
         implicit none
+        contains
         function hermitePolyTable(n) result(H)
           real, intent(in) :: n
           type(table) :: H
@@ -21,12 +20,12 @@
           character(len=:), allocatable :: filename
           type(table), target :: H
           integer :: i
-          filename = 'hermite_'//n//'_polynomial.txt' 
+          filename = 'hermite_'//n//'_polynomial.txt'
           H = hermitePolyTable(stringToReal(n))
-          open(1,file=filename)
+          open(1, file=filename)
           do i=1,ITERATIONS
             write(1,*) H%x(i), H%y(i)
           end do
           close(1)
         end subroutine writePolyTable
-      end module polyTables
+      end module tables_poly

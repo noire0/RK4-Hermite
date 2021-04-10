@@ -1,6 +1,6 @@
-      module ratioTables
-        use RK4Tables
-        use polyTables
+      module tables_ratio
+        use tables_rk4
+        use tables_poly
         implicit none
         contains
         subroutine ratioTable(n, x0, H0, DH0)
@@ -18,4 +18,4 @@
           end do
           close(1)
         end subroutine ratioTable
-      end module ratioTables
+      end module tables_ratio

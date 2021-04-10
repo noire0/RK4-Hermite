@@ -1,5 +1,5 @@
       program main
-        use RK4Tables
+        use tables_rk4
         real :: x0 = 0
 !Initial values of Hermite equation from WolframAlpha
         call writeTable('3.6', x0, 6.45735, -13.4829)

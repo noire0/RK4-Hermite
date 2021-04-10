@@ -1,5 +1,5 @@
       program main
-        use polyTables
+        use tables_poly
 !Initial values of Hermite from WolframAlpha
         call writePolyTable('2.7')
         call writePolyTable('5.6')

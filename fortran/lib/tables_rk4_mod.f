@@ -1,7 +1,5 @@
-      include "rungekutta.f"
-      include "tables.f"
       module tables_rk4
-        use rungeKutta
+        use runge_kutta
         use tables
         implicit none
         contains
@@ -19,12 +17,12 @@
             v = RK4(n, H%x(i), v, STEP)
             H%y(i+1) = v(1)
           end do
-        end function hermiteRK4Table
+        endfunction hermiteRK4Table
 
         subroutine writeTable(n, x0, H0, DH0)
-          real,  intent(in) ::  x0, H0, DH0
-          character(len=*),  intent(in) :: n
-          character(len=:), allocatable :: filename
+          real, intent(in) :: x0, H0, DH0
+          character(len=*), intent(in) :: n
+          character(len=:), allocatable ::filename
           type(table), target :: H
           integer :: i
           filename = 'hermite_'//n//'_rk4.txt'

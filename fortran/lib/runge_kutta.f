@@ -1,4 +1,4 @@
-      module rungeKutta
+      module runge_kutta
         implicit none
         contains
 ! MODIFY DV
@@ -66,4 +66,4 @@
           v = RK4(n, t, v, newstep)
           t = t + newstep
         end function iterativeRK4
-      end module rungeKutta
+      end module runge_kutta

@@ -1,6 +1,6 @@
 ! Compares the rk4 algorithm to the polynomial solution
       program main
-        use ratioTables
+        use tables_ratio
 ! Initial values of Hermite from WolframAlpha
         call ratioTable('2.7', 0., -1.57386, -7.85963)
         call ratioTable('5.6', 0., -59.4076, 151.008)
