@@ -24,7 +24,7 @@ TAB_SRCS = $(wildcard $(TAB_SRCDIR)/*$(SRCEXT))
 TAB_BINS = $(notdir $(basename $(TAB_SRCS)))
 
 # Files after compilation
-ACFILES = bin tables graphs build
+ACFILES = bin tables graphs build/*
 
 .PHONY: clean integrals tables test run graphs
 	
@@ -38,16 +38,20 @@ integrals: $(INT_BINS)
 tables: $(TAB_BINS)
 	mkdir -p tables/rk4 && cd tables/rk4 && $(BASEDIR)/bin/table_rk4
 	mkdir -p tables/poly && cd tables/poly && $(BASEDIR)/bin/table_poly
-	cd tables && $(BASEDIR)/table_rk4-poly-ratio
+	cd tables && $(BASEDIR)/bin/table_ratio
 	
 clean:
 	rm -rf $(ACFILES)
 	
 # OBJECT TARGETS
 define OBJECT_TARGET =
-$(notdir $(basename $(1))).o: $(2)
-	mkdir -p build && cd build && \
-	$(CC) -c $(1) $(CFLAGS)
+.ONESHELL:
+SHELL = /bin/bash
+OBJ = $(notdir $(basename $(1))).o
+$$(OBJ): $(2)
+	@mkdir -p build && cd build &&
+	@$(CC) -o $$(OBJ) -c $(1) $(CFLAGS)
+	@echo $$(OBJ) done
 endef
 $(foreach objectsrc,$(LIBSRCS1),$(eval $(call OBJECT_TARGET,$(objectsrc))))
 $(foreach objectsrc,$(LIBSRCS2),$(eval $(call OBJECT_TARGET,$(objectsrc),$(OBJS1))))
@@ -55,10 +59,16 @@ $(foreach objectsrc,$(LIBSRCS3),$(eval $(call OBJECT_TARGET,$(objectsrc),$(OBJS2
 
 # PROGRAM TARGETS
 define PROGRAM_TARGET =
-$(notdir $(basename $(1))): $(2)
-	mkdir -p bin && cd build && \
-	$(CC) -c $(1) $(CFLAGS) && \
-	$(CC) -o $(BASEDIR)/bin/$(notdir $(basename $(1))) $(notdir $(basename $(1))).o $(2)
+.ONESHELL:
+SHELL = /bin/bash
+PROGRAM = $(notdir $(basename $(1)))
+$$(PROGRAM): $(2)
+	@echo Building $$(PROGRAM)
+	@mkdir -p bin && cd build &&
+	@$(CC) -c -o $$(PROGRAM).o $(1) $(CFLAGS) &&
+	@echo $$(PROGRAM).o done
+	@$(CC) -o $(BASEDIR)/bin/$$(PROGRAM) $$(PROGRAM).o &&
+	@echo $$(PROGRAM) done
 endef
 $(foreach program,$(INT_SRCS),$(eval $(call PROGRAM_TARGET,$(program),$(OBJS1))))
 $(foreach program,$(TAB_SRCS),$(eval $(call PROGRAM_TARGET,$(program),$(OBJS))))
