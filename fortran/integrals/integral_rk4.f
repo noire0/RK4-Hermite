@@ -1,31 +1,24 @@
 !      include '../lib/lib.f'
       module auxiliar
-        use moduleIterativeRK4
+        use runge_kutta
         implicit none
-
+        real, parameter :: pi = 3.1415926535
         ! save initial values
         type parameters
           real :: n, x0, H0, DH0
         end type
-
-        real, parameter :: pi = 3.1415926535
-
         !keep RK4 data for orthogonality test
         type helper4
           real :: n(2), m(2), n_old(2), m_old(2), partial_sum
         end type
-
         ! keep RK4 data for unitary norm test
         type helper5
           real :: n(2), n_old(2), partial_sum
         end type
-
         contains
-
 ! change of variables inf-> 1, -inf-> -1
 ! exp(-x**2)*H_n(x)*H_m(x) dx := f(x) dx ->
 ! f(t/(1-t²))*(1+t²)/(1-t²)² dt
-
         subroutine integrating4(n,m,vector,x_old,x)
           type(parameters), intent(in) :: n,m
           real, intent(in) :: x_old, x

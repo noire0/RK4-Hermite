@@ -2,7 +2,7 @@ SHELL = /bin/bash
 BASEDIR = $(shell pwd)
 SRCDIR = $(BASEDIR)/fortran
 SRCEXT = .f
-CFLAGS = -fPIC -std=f2018 -static-libgfortran
+CFLAGS = -fPIC -shared -g -O2
 CC = /usr/bin/gfortran
 
 LIBDIR = $(SRCDIR)/lib
@@ -29,6 +29,9 @@ TAB_BINS = $(notdir $(basename $(TAB_SRCS)))
 ACFILES = bin tables graphs build/*
 
 .PHONY: clean integrals tables test run graphs
+.ONESHELL:
+
+build: $(TAB_BINS) $(INT_BINS)
 
 graphs: tables
 	./py/graphs.py tables/poly tables/rk4
@@ -38,9 +41,9 @@ integrals: $(INT_BINS)
 	./bin/integral_poly && printf "\a\n"
 
 tables: $(TAB_BINS)
-	mkdir -p tables/rk4 && cd tables/rk4 && $(BASEDIR)/bin/table_rk4
-	mkdir -p tables/poly && cd tables/poly && $(BASEDIR)/bin/table_poly
-	cd tables && $(BASEDIR)/bin/table_ratio
+	mkdir -p tables/rk4 && cd tables/rk4 && $(BASEDIR)/bin/tables_rk4; cd
+	mkdir -p tables/poly && cd tables/poly && $(BASEDIR)/bin/tables_poly; cd
+	cd tables && $(BASEDIR)/bin/tables_ratio
 	
 clean:
 	rm -rf $(ACFILES)
@@ -48,11 +51,10 @@ clean:
 # OBJECT TARGETS
 define OBJECT_TARGET =
 OBJ := $(notdir $(basename $(1))).o
-.ONESHELL:
 $$(OBJ): $(2)
+	@echo Building $$@
 	@mkdir -p build && cd build &&
 	@$$(CC) -o $$@ -c $(1) $$(CFLAGS)
-	@echo $$@ done
 endef
 $(foreach objectsrc,$(LIBSRCS1),$(eval $(call OBJECT_TARGET,$(objectsrc))))
 $(foreach objectsrc,$(LIBSRCS2),$(eval $(call OBJECT_TARGET,$(objectsrc),$(OBJS1))))
@@ -60,26 +62,24 @@ $(foreach objectsrc,$(LIBSRCS3),$(eval $(call OBJECT_TARGET,$(objectsrc),$(OBJS2
 
 # LIBRARY TARGETS
 define LIBRARY_TARGET =
-.ONESHELL:
 $(1): $(2)
 	@cd build &&
 	ar rcs $(1) $(2)
 endef
-$(eval $(call LIBRARY_TARGET,lib1.a,$(OBJS1)))
-$(eval $(call LIBRARY_TARGET,lib2.a,$(OBJS2)))
-$(eval $(call LIBRARY_TARGET,lib.a,$(OBJS)))
+$(eval $(call LIBRARY_TARGET,lib1.so,$(OBJS1)))
+$(eval $(call LIBRARY_TARGET,lib2.so,$(OBJS2)))
+$(eval $(call LIBRARY_TARGET,liball.so,$(OBJS)))
 
 # PROGRAM TARGETS
 define PROGRAM_TARGET =
-.ONESHELL:
 PROGRAM = $(notdir $(basename $(1)))
 $$(PROGRAM): $(2)
-	@echo Building $$(PROGRAM)
+	@echo Building $$@
 	@mkdir -p bin && cd build &&
-	@$$(CC) -c -o $$(PROGRAM).o $(1) $$(CFLAGS) &&
-	@echo $$(PROGRAM).o done
-	@$$(CC) -o $$(BASEDIR)/bin/$$(PROGRAM) $$(PROGRAM).o &&
-	@echo $$(PROGRAM) done
+	@$$(CC) -c -o $$@.o $(1) $$(CFLAGS) &&
+	@echo $$@.o done
+	@$$(CC) -o $$(BASEDIR)/bin/$$@ $$@.o -L$$(BASEDIR)/build -l$$(subst lib,,$$(subst .so,,$$<)) $$(CFLAGS) &&
+	@echo $$@ done
 endef
-$(foreach program,$(INT_SRCS),$(eval $(call PROGRAM_TARGET,$(program),$(OBJS1))))
-$(foreach program,$(TAB_SRCS),$(eval $(call PROGRAM_TARGET,$(program),$(OBJS))))
+$(foreach program,$(INT_SRCS),$(eval $(call PROGRAM_TARGET,$(program),lib1.so)))
+$(foreach program,$(TAB_SRCS),$(eval $(call PROGRAM_TARGET,$(program),liball.so)))

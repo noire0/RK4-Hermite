@@ -1,6 +1,6 @@
 !      include '../lib/lib.f'
       module auxiliar
-        use functions
+        use polynomial
         implicit none
         type parameters
           real :: n, x0, H0, DH0
@@ -18,7 +18,6 @@
      &    *((1+x**2)/(1-x**2)**2)
      &    *exp(-(x/(1-x**2))**2)
         end function
-
 
 ! trapezoidal rule
 
