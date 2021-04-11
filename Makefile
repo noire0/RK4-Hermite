@@ -74,7 +74,6 @@ $(eval $(call LIBRARY_TARGET,liball.so,$(OBJS)))
 define PROGRAM_TARGET =
 PROGRAM = $(notdir $(basename $(1)))
 $$(PROGRAM): $(2)
-	@echo Building $$@
 	@mkdir -p bin && cd build &&
 	@$$(CC) -c -o $$@.o $(1) $$(CFLAGS) &&
 	@echo $$@.o done
