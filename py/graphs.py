@@ -53,17 +53,23 @@ def individual(dictOfTables, targetDirectory = "graphs/individual_graphs/"):
     mkdir(targetDirectory)
     if targetDirectory[-1] != '/': targetDirectory += '/'
     for table in dictOfTables:
-    #    if not fnmatch.fnmatch(i, "*11.5*"):
         #-4 removes extension of the file
-        plt.plot(dictOfTables[table]['X'], dictOfTables[table]['Y'],
-                label=table)
+        plt.style.use("classic")
+        plt.figure(dpi=100, figsize=[12,9])
+        x = dictOfTables[table]['X']
+        y = dictOfTables[table]['Y']
+        plt.plot(x, y, label=table)
+        # Close inspection of the division of Hermite / RK4
+        if re.findall("^ratio", table).__len__() > 0:
+            plt.ylim((-4, 4))
+            plt.grid(b=True, which="both", axis="both", linestyle="--")
         plt.legend(loc="upper left")
         plt.savefig(targetDirectory+table+".png")
         plt.clf()
 
-
 if __name__ == "__main__":
     for i in range(1, len(sys.argv)):
         individual(dictOfTablesInPath(sys.argv[i]))
+        print(sys.argv[i])
     if len(sys.argv) > 1:
         compare(dictOfTablesInPath(sys.argv[1]), dictOfTablesInPath(sys.argv[2]))

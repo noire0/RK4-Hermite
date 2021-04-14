@@ -20,7 +20,7 @@
           character(len=:), allocatable :: filename
           type(table), target :: H
           integer :: i
-          filename = 'hermite_'//n//'_polynomial.txt'
+          filename = "hermite_"//n//"_polynomial.txt"
           H = hermitePolyTable(stringToReal(n))
           open(1, file=filename)
           do i=1,ITERATIONS

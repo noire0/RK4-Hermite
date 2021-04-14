@@ -11,7 +11,8 @@ BASE_TABLES_SRCS = $(foreach libsrc, polynomial runge_kutta tables, $(LIBDIR)/$(
 TABLES_SRCS = $(foreach libsrc, tables_poly_mod tables_rk4_mod, $(LIBDIR)/$(libsrc)$(SRCEXT))
 RATIO_SRCS = $(foreach libsrc, tables_ratio_mod, $(LIBDIR)/$(libsrc)$(SRCEXT))
 
-BASE_OBJS = $(foreach libsrc, $(BASE_TABLES_SRCS), $(notdir $(basename $(libsrc)).o))
+INT_OBJS = $(foreach libsrc, $(INT_SRCS), $(notdir $(basename $(libsrc)).o))
+BASE_TABLES_OBJS = $(foreach libsrc, $(BASE_TABLES_SRCS), $(notdir $(basename $(libsrc)).o))
 TABLES_OBJS = $(foreach libsrc, $(TABLES_SRCS), $(notdir $(basename $(libsrc)).o))
 RATIO_OBJS = $(foreach libsrc, $(RATIO_SRCS), $(notdir $(basename $(libsrc)).o))
 
@@ -37,7 +38,8 @@ build: $(TAB_BINS) $(INT_BINS)
 	@printf "\a"
 
 graphs: tables
-	@./py/graphs.py tables/poly tables/rk4
+	@install py/graphs.py bin
+	@./bin/graphs.py tables/poly tables/rk4 tables
 	@echo All graphs done
 	@printf "\a"
 
@@ -65,7 +67,7 @@ define OBJECT_TARGET =
 $$(notdir $$(basename $(1))).o: $(2)
 	@echo Building $$@
 	@mkdir -p build && cd build &&
-	@$$(CC) -o $$@ -c $(1) $$(CFLAGS)
+	@$$(CC) -o $$@ -c $(1) $$(CFLAGS) -shared -fPIC
 endef
 
 # LIBRARY TARGETS
@@ -88,16 +90,16 @@ $$(PROGRAM): $(2)
 	@echo bin/$$@ done
 endef
 
-# Gen BASE_OBJS
+# Gen BASE_TABLES_OBJS
 $(foreach objectsrc,$(BASE_TABLES_SRCS),$(eval $(call OBJECT_TARGET,$(objectsrc))))
 # Gen TABLES_OBJS
-$(foreach objectsrc,$(TABLES_SRCS),$(eval $(call OBJECT_TARGET,$(objectsrc),$(BASE_OBJS))))
+$(foreach objectsrc,$(TABLES_SRCS),$(eval $(call OBJECT_TARGET,$(objectsrc),$(BASE_TABLES_OBJS))))
 # Gen RATIO_OBJS
 $(foreach objectsrc,$(RATIO_SRCS),$(eval $(call OBJECT_TARGET,$(objectsrc),$(TABLES_OBJS))))
 
-$(eval $(call LIBRARY_TARGET,librk4hermite1.so,$(BASE_OBJS)))
-$(eval $(call LIBRARY_TARGET,librk4hermite2.so,$(TABLES_OBJS)))
-$(eval $(call LIBRARY_TARGET,librk4hermite.so,$(RATIO_OBJS) $(BASE_OBJS) $(TABLES_OBJS)))
+$(eval $(call LIBRARY_TARGET,libintegrals.so,$(BASE_TABLES_OBJS)))
+$(eval $(call LIBRARY_TARGET,librk4-poly-tables.so,$(TABLES_OBJS)))
+$(eval $(call LIBRARY_TARGET,liballtables.so,$(RATIO_OBJS) $(BASE_TABLES_OBJS) $(TABLES_OBJS)))
 
-$(foreach program,$(INT_SRCS),$(eval $(call PROGRAM_TARGET,$(program),librk4hermite1.so)))
-$(foreach program,$(TAB_SRCS),$(eval $(call PROGRAM_TARGET,$(program),librk4hermite.so)))
+$(foreach program,$(INT_SRCS),$(eval $(call PROGRAM_TARGET,$(program),libintegrals.so)))
+$(foreach program,$(TAB_SRCS),$(eval $(call PROGRAM_TARGET,$(program),liballtables.so)))

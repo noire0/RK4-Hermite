@@ -9,7 +9,7 @@
           character(len=:), allocatable :: filename
           type(table), target :: R, P
           integer :: i
-          filename = 'ratio_hermite_'//n//'_rk4_polynomial.txt'
+          filename = "ratio_hermite_"//n//"_rk4_polynomial.txt"
           P = hermitePolyTable(stringToReal(n))
           R = hermiteRK4Table(stringToReal(n), x0, H0, DH0)
           open(1, file=filename)
